@@ -57,7 +57,7 @@ def init_db():
     """)
 
     # default teacher login
-    cur.execute("INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)", ("deepika", "teachersday"))
+    cur.execute("INSERT OR IGNORE INTO users (username, password) VALUES (?, ?)", ("deepika", "Deepika@1101"))
     con.commit()
     con.close()
 
