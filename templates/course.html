@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+{% block title %}{{ course[1] }} | Premium Lessons{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="bg-gradient-to-r from-purple-700 via-fuchsia-600 to-pink-600 text-white shadow-lg">
+  <div class="max-w-6xl mx-auto px-6 py-20 text-center">
+    <h1 class="text-5xl font-extrabold tracking-tight drop-shadow-lg animate-fade-in">
+      {{ course[1] }}
+    </h1>
+    <p class="mt-4 text-xl text-purple-100 animate-slide-up">
+      Start your journey with structured, engaging lessons
+    </p>
+    <a href="{{ url_for('index') }}"
+       class="mt-8 inline-block px-8 py-3 bg-white text-purple-700 rounded-full font-semibold hover:bg-purple-50 transition-all duration-300 shadow-md hover:shadow-lg">
+       ← Back to Courses
+    </a>
+  </div>
+</section>
+
+<!-- Lessons Section -->
+<section class="bg-gradient-to-b from-gray-50 to-white">
+  <div class="max-w-6xl mx-auto px-6 py-16">
+    {% if lessons %}
+      <!-- Floating Search -->
+      <div class="flex justify-center mb-12">
+        <input id="lessonSearch"
+               type="text"
+               placeholder="🔍 Search lessons by title..."
+               class="w-full sm:w-2/3 md:w-1/2 px-5 py-3 rounded-full border border-gray-300 shadow-md bg-white/90 backdrop-blur-md text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition">
+      </div>
+
+      <!-- Lessons Grid -->
+      <div id="lessonsGrid" class="grid gap-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {% for l in lessons %}
+          <!-- Lesson Card -->
+          <div class="lesson-card flex flex-col bg-white/80 backdrop-blur-md rounded-3xl overflow-hidden shadow-md hover:shadow-2xl hover:scale-[1.03] hover:border hover:border-purple-400/70 transition-all duration-500 group opacity-100 animate-fade-in"
+               data-title="{{ l[1]|lower }}">
+
+            <!-- Video Preview -->
+            <div class="relative overflow-hidden">
+              <video id="video-{{ l[0] }}"
+                     class="w-full h-56 object-cover bg-black group-hover:scale-105 transition-transform duration-500 ease-in-out"
+                     preload="metadata"
+                     controls
+                     controlsList="nodownload"
+                     disablepictureinpicture
+                     disableremoteplayback
+                     oncontextmenu="return false;"
+                     onclick="incrementViews({{ l[0] }});">
+                <source src="{{ url_for('static', filename=l[3]) }}" type="video/mp4">
+                Your browser does not support video.
+              </video>
+            </div>
+
+            <!-- Lesson Info -->
+            <div class="flex-1 p-6 flex flex-col justify-between">
+              <h3 class="text-lg font-semibold text-gray-900 mb-3 leading-snug group-hover:text-purple-600 transition-colors duration-300">
+                {{ l[1] }}
+              </h3>
+              <div class="flex justify-between items-center mt-auto">
+                <span id="views-{{ l[0] }}" class="px-3 py-1 text-xs rounded-full bg-purple-100 text-purple-700 font-medium">
+                  👁 {{ l[5] }}
+                </span>
+                <button id="like-btn-{{ l[0] }}"
+                        onclick="likeLesson({{ l[0] }}, this)"
+                        class="px-3 py-1 text-xs rounded-full bg-pink-100 text-pink-700 font-medium hover:bg-pink-200 transition">
+                  ❤️ <span id="likes-{{ l[0] }}">{{ l[4] }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- No Results -->
+      <div id="noResults" class="hidden text-center mt-12 text-gray-500 text-lg">
+        No lessons found. Try another keyword.
+      </div>
+    {% else %}
+      <div class="text-center py-20">
+        <p class="text-gray-500 text-lg">No lessons available yet. Please check back soon.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<style>
+  /* Custom animations */
+  @keyframes fade-in { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+  @keyframes slide-up { from { opacity: 0; transform: translateY(40px);} to { opacity: 1; transform: translateY(0);} }
+  .animate-fade-in { animation: fade-in 0.8s ease forwards; }
+  .animate-slide-up { animation: slide-up 1s ease forwards; }
+
+  /* Highlight animation for search match */
+  @keyframes highlight-glow {
+    0% { box-shadow: 0 0 0 rgba(168,85,247,0); }
+    50% { box-shadow: 0 0 20px rgba(168,85,247,0.6); }
+    100% { box-shadow: 0 0 0 rgba(168,85,247,0); }
+  }
+  .highlight {
+    animation: highlight-glow 1s ease;
+  }
+</style>
+
+<script>
+  // Like
+  async function likeLesson(id, btnElem=null) {
+    try {
+      const res = await fetch(`/like/${id}`, { method: "POST" });
+      const data = await res.json();
+      document.getElementById(`likes-${id}`).innerText = data.likes;
+      if (data.already) {
+        btnElem.disabled = true;
+        btnElem.classList.add("opacity-60", "cursor-not-allowed");
+      }
+    } catch (err) { console.error("Like error", err); }
+  }
+
+  // Views
+  async function incrementViews(id) {
+    try {
+      const res = await fetch(`/view/${id}`, { method: "POST" });
+      const data = await res.json();
+      document.getElementById(`views-${id}`).innerText = "👁 " + data.views;
+    } catch (err) { console.error("View error", err); }
+  }
+
+  // Filter Lessons with smooth fade + highlight
+  function filterLessons() {
+    let input = document.getElementById("lessonSearch").value.toLowerCase();
+    let cards = document.querySelectorAll(".lesson-card");
+    let visible = 0;
+    cards.forEach(card => {
+      let title = card.getAttribute("data-title");
+      if (title.includes(input)) {
+        card.style.display = "flex";
+        card.classList.add("highlight");
+        setTimeout(() => card.classList.remove("highlight"), 1000);
+        card.style.opacity = "1";
+        card.style.transform = "scale(1)";
+        visible++;
+      } else {
+        card.style.opacity = "0";
+        card.style.transform = "scale(0.9)";
+        setTimeout(() => { card.style.display = "none"; }, 200);
+      }
+    });
+    document.getElementById("noResults").style.display = visible ? "none" : "block";
+  }
+
+  // Attach search event
+  document.getElementById("lessonSearch").addEventListener("keyup", filterLessons);
+</script>
+
+{% endblock %}

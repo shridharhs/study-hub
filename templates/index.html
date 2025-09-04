@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Deepika — Free Courses{% endblock %}
+{% block content %}
+
+<!-- Hero Section -->
+<section class="relative bg-gradient-to-b from-purple-700 via-indigo-800 to-purple-900 text-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-6 py-24 grid md:grid-cols-2 gap-16 items-center">
+    <!-- Left -->
+    <div>
+      <h1 class="text-5xl md:text-6xl font-extrabold leading-tight tracking-tight">
+        Learn. Code. <span class="bg-gradient-to-r from-pink-400 to-purple-300 bg-clip-text text-transparent">Grow.</span>
+      </h1>
+      <p class="mt-6 text-lg text-purple-200 max-w-xl leading-relaxed">
+  I’m Deepika, an MCA graduate with a passion for teaching.<br>
+  Learn Data Structures, DBMS, and Web Development for free.<br>
+  Let’s code, grow, and make your dreams a reality!
+</p>
+
+
+      <div class="mt-8 flex flex-wrap gap-4">
+        <a href="#courses"
+           class="px-8 py-3 rounded-full bg-white text-purple-800 font-semibold shadow-md hover:shadow-lg hover:scale-105 transition">
+          Browse Courses
+        </a>
+        <a href="#about"
+           class="px-8 py-3 rounded-full bg-purple-600 text-white border border-purple-400 font-semibold hover:bg-purple-700 transition">
+          About
+        </a>
+      </div>
+    </div>
+
+    <!-- Right -->
+    <div class="relative rounded-3xl shadow-2xl overflow-hidden ring-1 ring-purple-400/30">
+      <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1400&auto=format&fit=crop"
+           alt="Learning"
+           class="w-full h-96 object-cover">
+      <div class="absolute inset-0 bg-gradient-to-tr from-purple-900/40 to-pink-500/30"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Courses -->
+<section id="courses" class="bg-gray-50 py-20">
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="flex items-center justify-between mb-12">
+      <h2 class="text-4xl font-bold text-gray-900 tracking-tight">Courses</h2>
+      <span class="text-sm text-purple-600 font-medium">Free Access</span>
+    </div>
+
+    {% if courses %}
+      <div class="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+        {% for c in courses %}
+          <a href="{{ url_for('course', slug=c[2]) }}"
+             class="group relative bg-white rounded-3xl shadow hover:shadow-xl transition overflow-hidden">
+            <!-- Hover Effect -->
+            <div class="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition"></div>
+
+            <!-- Content -->
+            <div class="relative p-8">
+              <h3 class="text-2xl font-semibold text-gray-900 group-hover:text-purple-700 transition">
+                {{ c[1] }}
+              </h3>
+              <p class="mt-3 text-sm text-gray-500">Click to view lessons</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center text-gray-600 mt-16">🚀 No courses yet. Check back soon!</p>
+    {% endif %}
+  </div>
+</section>
+
+<!-- About --><section id="about" class="bg-gradient-to-b from-purple-50 to-white py-24 border-t border-gray-200">
+  <div class="max-w-4xl mx-auto px-6 text-center">
+    <h2 class="text-3xl md:text-4xl font-bold text-purple-900 mb-4">About This Platform</h2>
+    <p class="mt-4 text-purple-700 max-w-xl mx-auto leading-relaxed text-lg">
+      Learn freely, stay curious, and enjoy every step of your journey. This platform makes learning simple, inspiring, and focused on your growth.
+    </p>
+
+  </div>
+</section>
+
+
+{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Upload Dashboard{% endblock %}
+{% block content %}
+
+<section class="max-w-6xl mx-auto px-6 py-12">
+  <div class="flex items-center justify-between">
+    <h1 class="text-3xl font-bold">Upload Dashboard</h1>
+    <a href="{{ url_for('logout') }}" class="text-sm text-slate-600 hover:underline">Logout</a>
+  </div>
+
+  <!-- + Add Course -->
+  <div class="mt-6 bg-white rounded-2xl shadow p-6">
+    <h2 class="text-xl font-semibold mb-4">Create a New Course</h2>
+    <form method="POST" action="{{ url_for('add_course') }}" class="flex gap-3">
+      <input type="text" name="title" placeholder="e.g., DBMS" class="border px-3 py-2 rounded w-full" required>
+      <button class="px-5 py-2 rounded bg-indigo-600 text-white font-medium hover:bg-indigo-700">+ Add Course</button>
+    </form>
+  </div>
+
+  <!-- Courses -->
+  <div class="grid md:grid-cols-2 gap-6 mt-8">
+    {% for c in courses %}
+      <div class="bg-white rounded-2xl shadow p-6">
+        <div class="flex items-center justify-between">
+          <a href="{{ url_for('dashboard_course', slug=c[2]) }}" class="text-xl font-semibold hover:underline">{{ c[1] }}</a>
+          <a href="{{ url_for('dashboard_course', slug=c[2]) }}" class="text-indigo-600 text-sm">Manage →</a>
+        </div>
+      </div>
+    {% else %}
+      <div class="text-slate-600">No courses yet. Create your first course with the “+ Add Course” button above.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}
